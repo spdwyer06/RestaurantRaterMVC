@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -37,6 +38,34 @@ namespace RestaurantRater.Controllers
 
             // Doesn't delete what the user had previously put in if invalid
             return View(restaurant);
+        }
+
+        // GET: Restaurant/Delete/{id}
+        public ActionResult Delete(int? id)
+        {
+            if(id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Restaurant restaurant = _dbContext.Restaurants.Find(id);
+
+            if(restaurant == null)
+            {
+                return HttpNotFound();
+            }
+            return View(restaurant);
+        }
+
+        // POST: Restaurant/Delete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            Restaurant restaurant = _dbContext.Restaurants.Find(id);
+            _dbContext.Restaurants.Remove(restaurant);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
